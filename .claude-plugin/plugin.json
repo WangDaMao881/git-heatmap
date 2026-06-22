@@ -1,0 +1,16 @@
+{
+  "name": "git-heatmap",
+  "version": "0.1.0",
+  "description": "Render 4 Git activity charts (heatmap, code trend, time-of-day, author share) and track personal commit count. Auto-runs on commit; /heatmap for manual run.",
+  "author": { "name": "git-heatmap contributors" },
+  "license": "MIT",
+  "keywords": ["git", "heatmap", "visualization", "stats", "rust"],
+  "hooks": "./hooks/hooks.json",
+  "commands": [
+    {
+      "name": "heatmap",
+      "description": "Generate / refresh the 4 Git activity charts and personal commit count",
+      "file": "./commands/heatmap.md"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Built binaries (download from Releases instead)
+/bin/*.exe
+/bin/*.pdb
+/bin/git-heatmap
+/bin/git-heatmap-*
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

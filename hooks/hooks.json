@@ -1,0 +1,27 @@
+{
+  "description": "git-heatmap — render heatmap on git commit, refresh stats on Stop",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit:*)",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/run-heatmap.sh --mode post-commit"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/run-heatmap.sh --mode stop"
+          }
+        ]
+      }
+    ]
+  }
+}

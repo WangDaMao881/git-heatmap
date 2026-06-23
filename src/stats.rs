@@ -116,6 +116,34 @@ pub fn count_personal(commits: &[Commit], needle: &str) -> u32 {
         .count() as u32
 }
 
+/// Total additions + deletions across all commits in the slice.
+pub fn total_lines(commits: &[Commit]) -> (u64, u64) {
+    let mut add = 0u64;
+    let mut del = 0u64;
+    for c in commits {
+        add = add.saturating_add(c.additions);
+        del = del.saturating_add(c.deletions);
+    }
+    (add, del)
+}
+
+/// Additions + deletions for commits whose author matches `needle`.
+/// Same matching rule as `count_personal`.
+pub fn personal_lines(commits: &[Commit], needle: &str) -> (u64, u64) {
+    let needle = needle.to_lowercase();
+    let mut add = 0u64;
+    let mut del = 0u64;
+    for c in commits {
+        if c.author_email.to_lowercase().contains(&needle)
+            || c.author_name.to_lowercase().contains(&needle)
+        {
+            add = add.saturating_add(c.additions);
+            del = del.saturating_add(c.deletions);
+        }
+    }
+    (add, del)
+}
+
 use chrono::Timelike;
 
 #[cfg(test)]
@@ -183,5 +211,24 @@ mod tests {
         ];
         assert_eq!(count_personal(&commits, "alice"), 1);
         assert_eq!(count_personal(&commits, "@corp.com"), 2);
+    }
+
+    #[test]
+    fn total_lines_aggregates() {
+        let commits = vec![
+            c("a", "2025-03-15T10:00:00Z", "X", "x@x", 10, 3),
+            c("b", "2025-03-15T10:00:00Z", "Y", "y@x", 5, 7),
+        ];
+        assert_eq!(total_lines(&commits), (15, 10));
+    }
+
+    #[test]
+    fn personal_lines_substring() {
+        let commits = vec![
+            c("a", "2025-03-15T10:00:00Z", "Alice", "alice@corp.com", 10, 3),
+            c("b", "2025-03-15T10:00:00Z", "Bob", "bob@corp.com", 5, 7),
+        ];
+        assert_eq!(personal_lines(&commits, "alice"), (10, 3));
+        assert_eq!(personal_lines(&commits, "@corp.com"), (15, 10));
     }
 }

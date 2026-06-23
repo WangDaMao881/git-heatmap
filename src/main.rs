@@ -80,6 +80,12 @@ fn run() -> Result<()> {
     } else {
         stats::count_personal(&commits, &author_query)
     };
+    let (total_add, total_del) = stats::total_lines(&commits);
+    let (personal_add, personal_del) = if author_query.is_empty() {
+        (0, 0)
+    } else {
+        stats::personal_lines(&commits, &author_query)
+    };
     let total = commits.len() as u32;
 
     // 6. Render SVGs
@@ -94,7 +100,11 @@ fn run() -> Result<()> {
         since,
         until,
         total_commits: total,
+        total_additions: total_add,
+        total_deletions: total_del,
         personal_commits: personal,
+        personal_additions: personal_add,
+        personal_deletions: personal_del,
         author_query: author_query.clone(),
         top_authors: authors_top,
         heatmap_svg,
@@ -122,7 +132,7 @@ fn run() -> Result<()> {
     // 9. Manual mode → summary on stdout
     if args.mode == Mode::Manual {
         println!(
-            "git-heatmap [{since} .. {until}] (range={})\n  total_commits = {total}\n  personal_commits ({author_query}) = {personal}\n  files in {}/",
+            "git-heatmap [{since} .. {until}] (range={})\n  total_commits = {total} (+{total_add} -{total_del})\n  personal_commits ({author_query}) = {personal} (+{personal_add} -{personal_del})\n  files in {}/",
             args.range.label(),
             out_dir.display()
         );
